@@ -1,0 +1,12 @@
+<div class="hbwn-shell">
+  <header class="hbwn-fixed"><h2>{{caption}}</h2><div class="hbwn-line"><input type="search" name="search" value="{{query}}" placeholder="Search allowed Compendiums..." autofocus><button type="button" data-action="search"><i class="fa-solid fa-search"></i> Search</button></div><small>{{total}} matches shown{{#if more}} (first 180; narrow your search){{/if}}</small></header>
+  <main class="hbwn-scroll hbwn-picker-list">
+    {{#each results}}
+    <article class="hbwn-result"><img src="{{img}}" alt=""><div class="hbwn-result-main"><strong>{{name}}</strong><small>{{packTitle}} · {{type}}</small></div><button type="button" class="icon" data-action="view" data-uuid="{{uuid}}" title="Open native sheet"><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button type="button" data-action="choose" data-uuid="{{uuid}}">Select</button></article>
+    {{else}}<div class="hbwn-empty">No matches. Check Content Sources and try a different search.</div>{{/each}}
+  </main>
+  <footer class="hbwn-fixed hbwn-footer">
+    {{#if pending}}<span><strong>Selected:</strong> {{pending.name}} <small>({{pending.packTitle}})</small></span>{{else}}<span>Nothing selected yet</span>{{/if}}
+    <button type="button" data-action="cancel">Cancel</button><button type="button" data-action="apply" {{#unless pending}}disabled{{/unless}}><i class="fa-solid fa-check"></i> Apply Selection</button>
+  </footer>
+</div>

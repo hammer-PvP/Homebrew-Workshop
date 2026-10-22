@@ -1,0 +1,9 @@
+<div class="hbwn-shell">
+  <header class="hbwn-fixed"><h2>Content Sources</h2><p>Choose the Compendiums the Workshop can search. Its own Compendiums remain available automatically.</p></header>
+  <div class="hbwn-scroll hbwn-source-body">
+    {{#each groups}}<section class="hbwn-group"><div class="hbwn-group-title"><strong>{{label}}</strong><label><input type="checkbox" data-group-select="{{id}}"> Enable all</label></div>
+      <div class="hbwn-source-inner">{{#each packs}}<label class="hbwn-check"><input type="checkbox" data-group-pack="{{../id}}" value="{{collection}}" {{#if checked}}checked{{/if}}><span>{{title}}</span><small>{{collection}}</small></label>{{/each}}</div>
+    </section>{{/each}}
+  </div>
+  <footer class="hbwn-fixed hbwn-footer"><button type="button" data-action="reset">SRD Defaults</button><span class="hbwn-grow"></span><button type="button" data-action="save"><i class="fa-solid fa-floppy-disk"></i> Save Sources</button></footer>
+</div>

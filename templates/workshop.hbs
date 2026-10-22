@@ -1,0 +1,93 @@
+<div class="hbwn-shell hbwn-workshop-shell">
+  <header class="hbwn-fixed hbwn-topbar"><div class="hbwn-brand"><i class="fa-solid fa-hammer"></i><div><strong>Homebrew Workshop</strong><small>Native D&D5e Content Authoring · v0.0.1 reset</small></div></div><div class="hbwn-line"><button type="button" data-action="show" data-view="home">Create</button><button type="button" data-action="show" data-view="drafts">Drafts</button><button type="button" data-action="show" data-view="published">Published Library</button><button type="button" data-action="sources" title="Allowed Compendium sources"><i class="fa-solid fa-sliders"></i> Sources</button></div></header>
+  {{#if (eq view "home")}}
+  <div class="hbwn-scroll hbwn-home"><div class="hbwn-hero"><h2>What would you like to create?</h2><p>Author native content from scratch, use a class as a reference, or edit existing published content.</p></div><div class="hbwn-tiles">
+    <button type="button" class="hbwn-tile" data-action="create" data-type="class"><i class="fa-solid fa-shield-halved"></i><strong>New Class</strong><span>Blank · Reference · Existing</span></button>
+    <button type="button" class="hbwn-tile" data-action="create" data-type="subclass"><i class="fa-solid fa-sitemap"></i><strong>New Subclass</strong><span>Choose a Parent Class</span></button>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-bolt"></i><strong>Class Feature</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-award"></i><strong>Feat</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-wand-magic-sparkles"></i><strong>Spell</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-book-open"></i><strong>Spell List</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-scroll"></i><strong>Background</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-users"></i><strong>Species</strong><span>Planned</span></div>
+    <div class="hbwn-tile hbwn-disabled"><i class="fa-solid fa-box"></i><strong>Import Equipment</strong><span>Drag from Item Directory · Planned</span></div>
+  </div><p class="hbwn-note">New foundation: only Class and Subclass projects are active. Other content editors are intentionally not implemented yet.</p></div>
+  {{else if (eq view "published")}}
+  <div class="hbwn-scroll hbwn-library"><h2>Published Library</h2><p>Documents currently available in the Homebrew Workshop World Compendiums.</p>
+    {{#each published}}<div class="hbwn-result"><img src="{{img}}" alt=""><div class="hbwn-result-main"><strong>{{name}}</strong><small>{{type}} · {{pack}}</small></div><button type="button" data-action="publishedOpen" data-uuid="{{uuid}}">Open</button><button type="button" data-action="publishedEdit" data-uuid="{{uuid}}">Edit Draft</button></div>{{else}}<div class="hbwn-empty">Nothing published yet. Start with a Class.</div>{{/each}}
+  </div>
+  {{else}}
+  <div class="hbwn-body">
+    <aside class="hbwn-sidebar"><h3>Working Drafts</h3><div class="hbwn-drafts hbwn-scroll">
+      {{#each projects}}<div class="hbwn-draft {{#if selected}}hbwn-selected{{/if}}"><button class="hbwn-draft-open" type="button" data-action="project" data-id="{{id}}"><strong title="{{name}}">{{name}}</strong><small>{{type}} · {{mode}}</small></button><button type="button" class="icon" data-action="delete" data-id="{{id}}" title="Delete Draft"><i class="fa-solid fa-trash"></i></button></div>{{else}}<p class="hbwn-empty">No drafts yet.</p>{{/each}}
+    </div><div class="hbwn-sidebar-new"><button type="button" data-action="create" data-type="class"><i class="fa-solid fa-plus"></i> Class</button><button type="button" data-action="create" data-type="subclass"><i class="fa-solid fa-plus"></i> Subclass</button></div>
+    {{#if hasProject}}<h3>Authoring Steps</h3><nav class="hbwn-step-list">{{#each steps}}<button type="button" class="hbwn-step {{#if active}}active{{/if}}" data-action="step" data-step="{{id}}">{{label}}</button>{{/each}}</nav>{{/if}}
+    </aside>
+    <main class="hbwn-workarea hbwn-scroll">
+      {{#if hasProject}}
+      <div class="hbwn-project-head"><img src="{{project.data.img}}" alt=""><div><h2>{{project.data.name}}</h2><small>{{project.type}} · {{project.mode}} · {{project.data.system.identifier}}</small></div></div>
+      {{#if (eq project.step "project")}}
+        <h3>Project</h3><div class="hbwn-panel"><p>Choose a starting point. <strong>Blank with Reference</strong> only shows suggested milestones; <strong>Use Existing</strong> loads the entire native Class into an editable Draft.</p>
+          <label>Start from</label><select data-data-path="mode">{{#each newModes}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+          {{#unless (eq project.mode "blank")}}<div class="hbwn-line"><button type="button" data-action="pickSource"><i class="fa-solid fa-search"></i> Select Source</button>{{#if pendingSource}}<span class="hbwn-chip">{{pendingSource.name}}</span><button type="button" data-action="applySource"><i class="fa-solid fa-check"></i> Apply {{#if (eq project.mode "reference")}}Reference{{else}}Existing Class{{/if}}</button>{{/if}}</div>{{/unless}}
+          {{#if (eq project.type "subclass")}}<div class="hbwn-two"><div><label>Subclass Name</label><input data-data-path="name" value="{{project.data.name}}"></div><div><label>Identifier</label><div class="hbwn-line"><input data-data-path="identifier" value="{{project.data.system.identifier}}"><button type="button" data-action="identifierAuto">Auto</button></div></div></div><div class="hbwn-icon-line hbwn-line"><img src="{{project.data.img}}" alt=""><button type="button" data-action="icon">Browse Icon</button></div><label>Description (native HTML)</label><textarea rows="6" data-data-path="system.description.value">{{project.data.system.description.value}}</textarea>{{/if}}
+          {{#if project.reference}}<p class="hbwn-note">Reference: {{project.reference.name}}. This does not add features or change your Class.</p>{{/if}}
+          {{#if project.source}}<p class="hbwn-note">Imported from: {{project.source.name}}. All native Advancements stay in the Draft.</p>{{/if}}
+        </div>
+      {{else if (eq project.step "basics")}}
+        <h3>Class Basics</h3><div class="hbwn-panel"><div class="hbwn-two"><div><label>Class Name</label><input data-data-path="name" value="{{project.data.name}}"></div><div><label>Identifier</label><div class="hbwn-line"><input data-data-path="identifier" value="{{project.data.system.identifier}}"><button type="button" data-action="identifierAuto" title="Restore automatic identifier">Auto</button></div></div></div>
+          <div class="hbwn-line hbwn-icon-line"><img src="{{project.data.img}}" alt=""><button type="button" data-action="icon">Browse Icon</button><small>Uses Foundry File Picker</small></div>
+          <div class="hbwn-two"><div><label>Hit Die</label><select data-data-path="system.hd.denomination">{{#each hitDice}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{value}}</option>{{/each}}</select></div><div><label>Rules</label><input data-data-path="system.source.rules" value="{{project.data.system.source.rules}}"></div></div>
+          <label>Primary Abilities</label><div class="hbwn-checks">{{#each abilities}}<label><input type="checkbox" data-array-path="system.primaryAbility.value" value="{{id}}" {{#if primary}}checked{{/if}}> {{label}}</label>{{/each}}</div>
+          <label class="hbwn-inline-label"><input type="checkbox" data-data-path="system.primaryAbility.all" {{#if primaryAll}}checked{{/if}}> All selected abilities required (AND rather than OR)</label>
+          <label>Description — native HTML preserved</label><textarea rows="8" data-data-path="system.description.value">{{project.data.system.description.value}}</textarea><details><summary>Preview description</summary><div class="hbwn-description-preview">{{{project.data.system.description.value}}}</div></details>
+          <small class="hbwn-note">Native rich-text composition is planned. This foundation preserves imported HTML, links and UUID references without rewriting them.</small>
+        </div>
+      {{else if (eq project.step "training")}}
+        <h3>Proficiencies & Training</h3><p>All training is stored as native <strong>Trait Advancements</strong>. This includes Starting Class and Multiclass restrictions, Expertise and Mastery.</p>
+        {{#each advancements}}{{#if (eq type "Trait")}}<article class="hbwn-adv-row"><div><strong>{{display}}</strong><small>Lv {{atLevel}} · {{typeLabel}} · {{classRestriction}}</small></div><button type="button" data-action="advEdit" data-id="{{id}}">Edit</button></article>{{/if}}{{/each}}
+        <div class="hbwn-line"><button type="button" data-action="step" data-step="progression">Open Advancement Editor</button><small>{{trainingCount}} Training Advancements</small></div>
+        <div class="hbwn-note">Add Trait/Expertise/Mastery entries in Progression, including level 1 with Starting Class or Multiclass Entry restriction.</div>
+      {{else if (eq project.step "equipment")}}
+        <h3>Starting Equipment</h3><div class="hbwn-panel"><p><strong>{{startingCount}}</strong> native Starting Equipment entries are stored in the Draft.</p><p>The complete equipment tree is retained unchanged when importing an existing Class.</p><label>Starting Wealth Formula</label><input data-data-path="system.wealth" value="{{project.data.system.wealth}}"><div class="hbwn-line"><button type="button" data-action="resetEquipment">No Starting Equipment / Clear</button></div>
+          <small class="hbwn-note">The Character Builder-style free authoring shop is not yet implemented in the reset foundation. Imported equipment is preserved.</small>
+        </div>
+      {{else if (eq project.step "magic")}}
+        <h3>Spellcasting</h3><div class="hbwn-panel"><p>Native Class spellcasting fields. Spell lists are resolved by the D&D5e system and referenced by its class identifier.</p>
+          <div class="hbwn-two"><div><label>Spellcasting Progression</label><select data-data-path="system.spellcasting.progression">{{#each spellProgressions}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div><div><label>Spellcasting Ability</label><select data-data-path="system.spellcasting.ability"><option value="">None / System default</option>{{#each abilities}}<option value="{{id}}" {{#if spell}}selected{{/if}}>{{label}}</option>{{/each}}</select></div></div>
+          <label>Prepared Formula (native)</label><input data-data-path="system.spellcasting.preparation.formula" value="{{spell.preparation.formula}}"><small class="hbwn-note">The complete Spell List Builder and prepared/known choice editors follow after Class conformance auditing.</small>
+        </div>
+      {{else if (eq project.step "parent")}}
+        <h3>Parent Class</h3><div class="hbwn-panel"><p>A Subclass inherits its parent's Hit Die, Saves, Armor, Weapons and Starting Equipment. It only publishes its own subclass data and Advancements.</p>
+        {{#if project.parent}}<p>Linked parent: <strong>{{project.parent.name}}</strong> ({{project.data.system.classIdentifier}})</p>{{else}}<p>No Parent Class selected.</p>{{/if}}
+        <div class="hbwn-line"><button type="button" data-action="pickParent">Choose Parent Class</button>{{#if pendingParent}}<span>{{pendingParent.name}}</span><button type="button" data-action="applyParent">Apply Parent</button>{{/if}}</div></div>
+      {{else if (eq project.step "progression")}}
+        <h3>Progression — Level {{currentLevel}}</h3>
+        <div class="hbwn-progress-layout"><aside class="hbwn-level-nav hbwn-scroll">{{#each levelRows}}<button type="button" data-action="level" data-level="{{level}}" class="{{#if active}}active{{/if}}"><span>Lv {{level}}</span><small>{{count}} entry/entries</small></button>{{/each}}</aside><section class="hbwn-progress-content">
+          {{#if hasReference}}<div class="hbwn-ref-box"><strong><i class="fa-solid fa-book-open"></i> Reference: {{referenceName}}</strong><p>Suggested milestones at this level (not inserted):</p>{{#each reference}}<div class="hbwn-ref-entry">{{label}} <small>· {{type}}</small></div>{{/each}}</div>{{/if}}
+          {{#each levelItems}}<article class="hbwn-adv-row"><div><strong>{{display}}</strong><small>{{typeLabel}} · {{summary}}</small></div><button type="button" data-action="advEdit" data-id="{{id}}">Edit</button><button type="button" data-action="advDuplicate" data-id="{{id}}" title="Duplicate">Copy</button><button type="button" data-action="advDelete" data-id="{{id}}" title="Remove"><i class="fa-solid fa-trash"></i></button></article>{{else}}<p class="hbwn-empty">No Advancements at this level. Empty levels are valid.</p>{{/each}}
+          <div class="hbwn-line hbwn-add-row"><select name="addType">{{#each advTypes}}<option value="{{id}}">{{name}}</option>{{/each}}</select><button type="button" data-action="advAdd"><i class="fa-solid fa-plus"></i> Add to Level {{currentLevel}}</button></div>
+        </section></div>
+      {{else if (eq project.step "review")}}
+        <h3>Review & Publish</h3><div class="hbwn-panel"><p>Review the native document prior to publication. No workshop gameplay runtime is required.</p>
+          <div class="hbwn-stats"><div><strong>{{nativeItems}}</strong><small>Native Advancements</small></div><div><strong>{{startingCount}}</strong><small>Starting Equipment entries</small></div><div><strong>{{project.type}}</strong><small>Document type</small></div></div>
+          {{#if advHasUnknown}}<p class="hbwn-warning">This class contains unrecognized native Advancement types. They are preserved as-is. Full guided editing for them is not yet available.</p>{{/if}}
+          {{#if project.source}}<p class="hbwn-warning">Imported from {{project.source.name}}. Native spell lists and some class-level references may be registered under the original identifier. This reset build does not remap every identifier-dependent resource; verify caster classes and level-up before relying on the published result.</p>{{/if}}
+          {{#if project.publishedUuid}}<p>Existing published document: {{project.publishedUuid}}</p><button type="button" data-action="publish" data-mode="update"><i class="fa-solid fa-rotate"></i> Update Existing</button>{{/if}}
+          <button type="button" data-action="publish" data-mode="new"><i class="fa-solid fa-upload"></i> Publish as New</button>
+          <p class="hbwn-note">Foundry/D&D5e DataModel validation occurs before writing. Publishing removes the active Draft after success; published documents can be reopened later.</p>
+        </div>
+      {{/if}}
+      {{#if working}}<div class="hbwn-overlay"><section class="hbwn-editor"><div class="hbwn-editor-title"><h3>Edit {{workingTypeLabel}}</h3><button type="button" data-action="advCancel" class="icon"><i class="fa-solid fa-xmark"></i></button></div><div class="hbwn-scroll hbwn-editor-scroll"><p>Native Advancement. Only <strong>Apply</strong> changes the Draft.</p>
+        <div class="hbwn-two"><div><label>Display Name</label><input data-working-path="name" value="{{working.name}}"></div><div><label>Entry Level</label><input type="number" min="0" max="20" data-working-path="level" value="{{working.level}}"></div></div>
+        <label>Available When</label><select data-working-path="classRestriction"><option value="">Always</option><option value="primary" {{#if (eq working.classRestriction "primary")}}selected{{/if}}>Starting Class</option><option value="secondary" {{#if (eq working.classRestriction "secondary")}}selected{{/if}}>Multiclass Entry</option></select>
+        {{#if workingHasGrant}}<div class="hbwn-help">Granted Items: {{workingGrantCount}}. Use source picker to add native Item UUIDs.</div><button type="button" data-action="grantPicker">+ Grant Existing Item</button>{{/if}}
+        {{#if workingHasChoice}}<div class="hbwn-help">Choice Pool: {{workingChoiceCount}} Items.</div><label>Number of player choices at this level</label><input type="number" min="0" data-working-path="{{workingCountPath}}" value="{{workingCount}}"><button type="button" data-action="choicePicker">+ Add Choice Option</button>{{/if}}
+        {{#if workingIsTrait}}<div class="hbwn-help">Traits support native grants, choices and modes such as proficiency, expertise and mastery. Use the structured native properties below for full control.</div><label>Trait Mode</label><select data-working-path="configuration.mode"><option value="default" {{#if (eq workingMode "default")}}selected{{/if}}>Proficiency</option><option value="expertise" {{#if (eq workingMode "expertise")}}selected{{/if}}>Expertise</option><option value="forcedExpertise" {{#if (eq workingMode "forcedExpertise")}}selected{{/if}}>Forced Expertise</option><option value="upgrade" {{#if (eq workingMode "upgrade")}}selected{{/if}}>Upgrade</option><option value="mastery" {{#if (eq workingMode "mastery")}}selected{{/if}}>Weapon Mastery</option></select>{{/if}}
+        <details open><summary><strong>Native Fields (Advanced)</strong> — full fidelity</summary><p class="hbwn-help">Raw native advancement data is exposed in this first foundation to preserve and edit fields not yet covered by guided controls. It is not the final book-friendly editor.</p><textarea spellcheck="false" name="nativeJson" class="hbwn-json" rows="13">{{workingJson}}</textarea></details>
+      </div><footer class="hbwn-footer"><button type="button" data-action="advCancel">Cancel</button><button type="button" data-action="advApply"><i class="fa-solid fa-check"></i> Apply Advancement</button></footer></section></div>{{/if}}
+      {{else}}<div class="hbwn-empty">Choose a Draft at left, or create a new Class or Subclass.</div>{{/if}}
+    </main>
+  </div>
+  {{/if}}
+</div>
